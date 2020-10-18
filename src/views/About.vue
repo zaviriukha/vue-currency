@@ -32,37 +32,30 @@
               <tbody>
               <tr
                   v-for="valute in valutes"
-                  :key="valute.cc"
+                  :key="valute[0]"
               >
                 <td @click="addFavorite(valute)" v-bind:class="{ active: showMobileMenu }">
                   favorite
                 </td>
-                <td @click.stop="openChartModal(valutes)">
-                  {{ valute.cc }}
+                <td @click.stop="openChartModal(valute)">
+                  {{ valute[0] }}
                 </td>
-                <ChartModal v-model="showChartModal" :currency="valutes"/>
-                <td>{{ valute.txt }}</td>
-                <td>{{ valute.rate }}</td>
+                <ChartModal v-model="showChartModal" :currency="valute"/>
+                <td>{{ valute[1].txt }}</td>
+                <td>{{ valute[1].rate }}</td>
               </tr>
               </tbody>
             </template>
 
-            <div class="text-center">
-
-
-            </div>
           </v-simple-table>
 
-
-
-            <div class="d-flex" style="min-width: 350px; border: 1px solid red; padding: 10px">
-
-              <v-col>
-                <v-flex class="d-flex justify-center">
-                  <h3>Favorite Rates</h3>
-                </v-flex>
+          <div class="d-flex" style="min-width: 350px; border: 1px solid red; padding: 10px">
+            <v-col>
+              <v-flex class="d-flex justify-center">
+                <h3>Favorite Rates</h3>
+              </v-flex>
               <ul v-for="favorite in favorites">
-                <li>{{ favorite.cc }} {{ favorite.name }}
+                <li>{{ favorite.cc }} - {{ favorite.name }}
                   <v-btn
                       color="primary"
                       fab
@@ -73,19 +66,10 @@
                   </v-btn>
                 </li>
               </ul>
-              </v-col>
-            </div>
-
-
+            </v-col>
+          </div>
         </v-row>
-
       </v-col>
-
-
-      <!--      <div v-if="showChartModal">-->
-      <!--        teteyehdfncvkgkhljk-->
-      <!--      </div>-->
-
     </v-layout>
   </v-container>
 </template>
@@ -114,20 +98,20 @@ export default {
     this.valutes = await this.$store.dispatch('fetchCurrency')
   },
   methods: {
-    toggle() {
-      // console.log('test')
-    },
-    openChartModal(valutes) {
-      // console.log('test')
-      this.valutes = currency;
+    openChartModal(valute) {
+      //console.log(valute)
+      this.currency = valute;
       this.showChartModal = true
     },
     addFavorite(valute) {
       // this.showMobileMenu = !this.showMobileMenu
 
+      let favorites = localStorage.getItem("favorites");
+      favorites = (favorites) ? JSON.parse(favorites) : [];
+
       let newFavorite = {
-        name: valute.txt,
-        cc: valute.cc
+        name: valute[1].txt,
+        cc: valute[0]
       }
       this.favorites.push(newFavorite)
     },
@@ -139,44 +123,4 @@ export default {
 }
 </script>
 
-<style lang="scss">
-.favoriting {
-  display: inline-block
-}
-
-.favorite__heart {
-  display: inline-block;
-  padding: 3px;
-  vertical-align: middle;
-  line-height: 1;
-  font-size: 16px;
-  color: #ABABAB;
-  cursor: pointer;
-  -webkit-transition: color .2s ease-out;
-  transition: color .2s ease-out;
-}
-
-.favorite__heart.is-disabled:hover {
-  cursor: default;
-}
-
-.favorite__checkbox {
-  position: absolute;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  height: 1px;
-  width: 1px;
-  margin: -1px;
-  padding: 0;
-  border: 0;
-}
-
-.favorite__heart__selected {
-  color: #df470b;
-}
-
-.showMobileMenu,
-.active{
-  color: red;
-}
-</style>
+<style lang="scss"></style>

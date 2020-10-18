@@ -6,23 +6,9 @@
         dark
     >
       <div class="d-flex align-center">
-        <v-img
-            alt="Vuetify Logo"
-            class="shrink mr-2"
-            contain
-            src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-            transition="scale-transition"
-            width="40"
-        />
-
-        <v-img
-            alt="Vuetify Name"
-            class="shrink mt-1 hidden-sm-and-down"
-            contain
-            min-width="100"
-            src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-            width="100"
-        />
+        <div class="header-brand">
+          <h2 class="size-lg">The Currency Operations</h2>
+        </div>
       </div>
 
       <v-spacer></v-spacer>
@@ -44,7 +30,6 @@
 export default {
   name: 'App',
   components: {},
-
   data: () => ({}),
 };
 </script>
@@ -58,6 +43,13 @@ export default {
 
   &:hover{
     color: aqua;
+  }
+}
+
+.header-brand{
+  .size-lg{
+    font-size: 1.2rem;
+    color: white;
   }
 }
 </style>

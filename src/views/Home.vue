@@ -13,10 +13,8 @@
               <v-col class="px-1" cols="3">
                 <v-select @change="convert" v-model="selected[0]" :items="ccyCodes" label="I have"></v-select>
               </v-col>
-
               <v-col class="px-1" cols="9">
-                <v-text-field @input="convert" v-model="inputed" ></v-text-field>
-
+                <v-text-field @input="convert" v-model="inputed"></v-text-field>
               </v-col>
             </v-row>
           </v-col>
@@ -26,7 +24,6 @@
               <v-col class="px-1" cols="9">
                 <v-text-field v-model="result" type="number" readonly></v-text-field>
               </v-col>
-
               <v-col class="px-1" cols="3">
                 <v-select @change="convert" v-model="selected[1]" :items="ccyCodes" label="I buy"></v-select>
               </v-col>
@@ -34,14 +31,11 @@
           </v-col>
         </v-row>
       </v-col>
-
-
     </v-layout>
   </v-container>
 </template>
 
 <script>
-
 export default {
   name: 'Home',
   components: {},
@@ -52,45 +46,34 @@ export default {
       inputed: "",
       result: null,
       ccyCodes: ['UAH'],
-    }},
+    }
+  },
   methods: {
     convert() {
-      // Default valute values / RUB
       let defaultValute = {
         rate: 1,
       };
 
-      // First selected valute details
-      let firstValute = this.valutes[this.selected[0]] ?? defaultValute,
+      let firstValute = this.valutes.get(this.selected[0]) ?? defaultValute,
           firstValuteValue = firstValute.rate * Number(this.inputed);
 
-      // Second selected valute details
-      let secondValute = this.valutes[this.selected[1]] ?? defaultValute,
+      let secondValute = this.valutes.get(this.selected[1]) ?? defaultValute,
           secondValuteValue = secondValute.rate;
 
-
-      // Result calculating
       let result = (firstValuteValue) / (secondValuteValue);
 
-      // Rounding to ten thousandths
       this.result = result ? Math.floor(result * 10000) / 10000 : null;
     },
   },
   async mounted() {
     this.valutes = await this.$store.dispatch('fetchCurrency')
-    // console.log(this.valutes)
 
-    let valutes = this.valutes;
-    this.ccyCodes = this.ccyCodes.concat(valutes.map(function (valute){
-      return valute.cc;
-    }));
+    let valutes = []
+    for (let pair of this.valutes) {
+      valutes.push(pair[0])
+    }
 
-    // this.valutes = this.data.exchange;
-    // Adding all charCodes to array
-    // for (let r030 in valutes) {
-    //   this.countries.push(code)
-    //   console.log(this.countries.push(code))
-    // }
+    this.ccyCodes = this.ccyCodes.concat(valutes);
   },
 }
 </script>
