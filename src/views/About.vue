@@ -40,10 +40,10 @@
                 <td @click.stop="openChartModal(valute)">
                   {{ valute[0] }}
                 </td>
-                <ChartModal v-model="showChartModal" :currency="valute"/>
                 <td>{{ valute[1].txt }}</td>
                 <td>{{ valute[1].rate }}</td>
               </tr>
+              <ChartModal v-model="showChartModal" :currency="ccy" />
               </tbody>
             </template>
 
@@ -82,6 +82,7 @@ export default {
   data() {
     return {
       valutes: {},
+      ccy: {},
       selected: [],
       dialog: false,
       showChartModal: false,
@@ -99,8 +100,7 @@ export default {
   },
   methods: {
     openChartModal(valute) {
-      //console.log(valute)
-      this.currency = valute;
+      this.ccy = valute[1];
       this.showChartModal = true
     },
     addFavorite(valute) {

@@ -28,8 +28,9 @@ export default {
   name: "ChartModal",
   props: {
     value: Boolean,
-    currency: {}
+    currency: Object
   },
+  // props: [ 'value', 'currency'],
   computed: {
     show: {
       get() {
