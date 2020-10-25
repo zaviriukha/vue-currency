@@ -2,15 +2,17 @@
   <v-dialog v-model="show" max-width="500px">
     <v-card>
       <v-card-title class="headline grey lighten-2">
-        {{ currency.txt}}
+        {{ currency.txt }}
       </v-card-title>
 
       <v-card-text>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-        magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-        consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-        pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est
-        laborum.
+        <div class="my-3">
+          Selected currency: <strong>{{ currency.cc }}</strong>
+        </div>
+        <div>
+          <LineChart :width="400" :height="300"
+                     :chartData="datacollection" />
+        </div>
       </v-card-text>
 
       <v-divider></v-divider>
@@ -24,26 +26,62 @@
 </template>
 
 <script>
+import Chart from 'chart.js';
+import LineChart from "@/components/LineChart";
+
 export default {
   name: "ChartModal",
+  components: {LineChart},
+  data: () => ({
+    datacollection: null,
+    options: {
+              elements: {
+                line: {
+                  tension: 0 // disables bezier curves
+                }
+              },
+    }
+  }),
   props: {
     value: Boolean,
     currency: Object
   },
-  // props: [ 'value', 'currency'],
   computed: {
     show: {
       get() {
+        this.fillCollection()
         return this.value
       },
       set(value) {
         this.$emit('input', value)
-      }
+      },
+
     }
-  }
+
+  },
+  mounted () {
+  },
+  methods:{
+    fillCollection(){
+      this.datacollection = {
+
+        labels: ['1','2','3'],
+        datasets: [
+          {
+            label: this.currency.cc,
+            lineTension:0,
+            backgroundColor: '#f87979',
+            data: [this.currency.rate, this.currency.rate + 1, this.currency.rate-1],
+          },
+        ],
+
+      }
+    },
+  },
+
+
 }
 </script>
 
-<style scoped>
-
+<style scoped lang="scss">
 </style>

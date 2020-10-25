@@ -43,7 +43,7 @@
                 <td>{{ valute[1].txt }}</td>
                 <td>{{ valute[1].rate }}</td>
               </tr>
-              <ChartModal v-model="showChartModal" :currency="ccy" />
+              <ChartModal v-model="showChartModal" :currency="currency" />
               </tbody>
             </template>
 
@@ -82,7 +82,7 @@ export default {
   data() {
     return {
       valutes: {},
-      ccy: {},
+      currency: {},
       selected: [],
       dialog: false,
       showChartModal: false,
@@ -100,12 +100,10 @@ export default {
   },
   methods: {
     openChartModal(valute) {
-      this.ccy = valute[1];
+      this.currency = valute[1];
       this.showChartModal = true
     },
     addFavorite(valute) {
-      // this.showMobileMenu = !this.showMobileMenu
-
       let favorites = localStorage.getItem("favorites");
       favorites = (favorites) ? JSON.parse(favorites) : [];
 
