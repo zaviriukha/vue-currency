@@ -11,8 +11,10 @@
         </div>
         <div>
           <LineChart :width="400" :height="300"
-                     :chartData="datacollection" />
+                     :chartData="datacollection"/>
         </div>
+
+        <v-btn color="primary" @click="lastSevenDays">Close</v-btn>
       </v-card-text>
 
       <v-divider></v-divider>
@@ -34,13 +36,7 @@ export default {
   components: {LineChart},
   data: () => ({
     datacollection: null,
-    options: {
-              elements: {
-                line: {
-                  tension: 0 // disables bezier curves
-                }
-              },
-    }
+    weekDays: []
   }),
   props: {
     value: Boolean,
@@ -55,28 +51,49 @@ export default {
       set(value) {
         this.$emit('input', value)
       },
+    },
+    lastSevenDays() {
+      let lastWeek = new Map()
+      let curentDay = new Date;
+      const format = "YYYYMMDD"
 
+      for (let i = 6; i >= 0; i--) {
+        let dt = new Date;
+        dt = dt.setDate(curentDay.getDate() - i);
+        lastWeek.set(dt,i)
+
+        let week = moment(dt).format(format)
+        // lastWeek.push( curentDay.getDay( curentDay.setDate( curentDay.getDate()-i ) ) );
+        //lastWeek.push( curentDay.getDate(curentDay.setDate( curentDay.getDate()-i )));
+        // console.log(dt)
+        // console.log(moment(dt).format(format))
+        console.log(week)
+      }
+
+
+      // curentDay.setDate(curentDay.getDate()-7);
+      // console.log(curentDay)
     }
-
   },
-  mounted () {
+  mounted() {
   },
-  methods:{
-    fillCollection(){
+  methods: {
+    fillCollection() {
       this.datacollection = {
 
-        labels: ['1','2','3'],
+        labels: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
         datasets: [
           {
             label: this.currency.cc,
-            lineTension:0,
+            lineTension: 0,
             backgroundColor: '#f87979',
-            data: [this.currency.rate, this.currency.rate + 1, this.currency.rate-1],
+            data: [this.currency.rate, this.currency.rate + 1, this.currency.rate - 1],
           },
         ],
-
       }
     },
+
+
   },
 
 

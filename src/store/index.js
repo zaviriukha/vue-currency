@@ -14,6 +14,11 @@ export default new Vuex.Store({
       resArray.forEach((valute)=>{vals.set(valute.cc, valute)});
 
       return vals;
+    },
+    async fetchRateOnDate(date, currency) {
+      const res = await fetch(`https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json&valcode=${currency}&date=${date}`);
+      let resArray = await res.json();
+      return resArray.rate;
     }
   },
   modules: {}
