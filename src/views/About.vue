@@ -43,7 +43,7 @@
                 <td>{{ valute[1].txt }}</td>
                 <td>{{ valute[1].rate }}</td>
               </tr>
-              <ChartModal v-model="showChartModal" :currency="currency" />
+              <ChartModal v-model="showChartModal" :currency="currency"/>
               </tbody>
             </template>
 
@@ -104,14 +104,18 @@ export default {
       this.showChartModal = true
     },
     addFavorite(valute) {
-      let favorites = localStorage.getItem("favorites");
-      favorites = (favorites) ? JSON.parse(favorites) : [];
+      let favorites = []
+      // let favorites = localStorage.getItem("favorites");
+      // favorites = (favorites) ? JSON.parse(favorites) : [];
+      // console.log(localStorage.favorites)
 
       let newFavorite = {
         name: valute[1].txt,
         cc: valute[0]
       }
-      this.favorites.push(newFavorite)
+      this.favorites.push(newFavorite);
+      // localStorage.setItem("test", JSON.stringify(favorites));
+      // console.log(favorites)
     },
     deleteFavorite() {
       let index = this.favorites.indexOf(1)

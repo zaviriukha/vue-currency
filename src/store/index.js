@@ -16,9 +16,9 @@ export default new Vuex.Store({
       return vals;
     },
     async fetchRateOnDate(date, currency) {
-      const res = await fetch(`https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json&valcode=${currency}&date=${date}`);
+      const res = await fetch(`https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json&valcode=${currency[1]}&date=${currency[0]}`);
       let resArray = await res.json();
-      return resArray.rate;
+      return resArray[0].rate;
     }
   },
   modules: {}
