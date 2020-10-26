@@ -19,7 +19,7 @@
           <LineChart :width="400" :height="300"
                      :chartData="datacollection"/>
         </div>
-
+<!--        <v-btn color="primary" @click="lastMonthRate">Close</v-btn>-->
       </v-card-text>
 
       <v-divider></v-divider>
@@ -74,37 +74,58 @@ export default {
         return this.value
       },
       set(value) {
-
         this.$emit('input', value)
       },
-    },
-
-    lastMonth() {
-      let lastMonth = new Map()
-      let previousMonth = new Date();
-      const format = "YYYYMMDD"
-
-      for (let i = 6; i >= 0; i--) {
-
-      }
-      previousMonth.setMonth(previousMonth.getMonth()-1);
-      console.log(previousMonth)
     }
   },
   mounted() {},
   methods: {
     async weekRates() {
-      let lastWeek = new Map()
+      let lastWeek = new Map();
       let currentDay = new Date;
-      const format = "YYYYMMDD"
+      const format = "YYYYMMDD";
 
       for (let i = 6; i >= 0; i--) {
         let dt = new Date;
         dt = dt.setDate(currentDay.getDate() - i);
         let stringDate = moment(dt).format(format);
-        let rate = await this.$store.dispatch('fetchRateOnDate', [stringDate, this.currency.cc])
-        lastWeek.set(stringDate, rate)
+        let rate = await this.$store.dispatch('fetchRateOnDate', [stringDate, this.currency.cc]);
+        lastWeek.set(stringDate, rate);
         this.fillCollection(lastWeek)
+      }
+    },
+
+    async halfYearRate(){
+      let halfYear = new Map();
+      let currentMonth = new Date;
+      const format = "YYYYMMDD";
+
+      for (let i = 6; i >= 0; i--) {
+        let dt = new Date;
+        dt = dt.setMonth(dt.getMonth() - i);
+        let stringHalfYear = moment(dt).format(format);
+        let halfYearRate = await this.$store.dispatch('fetchRateOnDate', [stringHalfYear, this.currency.cc]);
+        halfYear.set(stringHalfYear, halfYearRate);
+        this.fillCollection(halfYear)
+      }
+    },
+
+    async lastMonthRates() {
+      let lastMonth = new Map();
+      let currentDayMonth = new Date;
+      let prevDayMonth = new Date;
+      const format = "YYYYMMDD";
+
+      prevDayMonth.setMonth(prevDayMonth.getMonth() - 1);
+
+      let dd = (currentDayMonth - prevDayMonth) / 1000 / 60 / 60 / 24;
+      for (let i=dd; i >= 0; i--) {
+        let dt = new Date;
+        dt = dt.setDate(dt.getDate() - i);
+        let stringDate = moment(dt).format(format);
+        let rate = await this.$store.dispatch('fetchRateOnDate', [stringDate, this.currency.cc]);
+        lastMonth.set(stringDate, rate);
+        this.fillCollection(lastMonth)
       }
     },
 
@@ -120,20 +141,24 @@ export default {
           },
         ],
       }
+      let labels = [];
+      let data =[];
       for (let pair of rateMap) {
-        this.datacollection.labels.push(pair[0]);
-        this.datacollection.datasets[0].data.push(pair[1]);
+        labels.push(pair[0]);
+        data.push(pair[1]);
       }
+      this.datacollection.labels = labels;
+      this.datacollection.datasets[0].data = data;
     },
     sortItem() {
-      if (this.sortType == 'week') {
+      if (this.sortType === 'week') {
         this.weekRates();
       }
-      if (this.sortType == 'month') {
-        console.log('month')
+      if (this.sortType === 'month') {
+        this.lastMonthRates();
       }
-      if (this.sortType == 'year') {
-        console.log('year')
+      if (this.sortType === 'year') {
+        this.halfYearRate();
       }
     }
 
