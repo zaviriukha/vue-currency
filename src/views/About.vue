@@ -33,9 +33,10 @@
               <tr
                   v-for="valute in valutes"
                   :key="valute[0]"
+                  :class="{ active: valute[0] === isFavorite}"
               >
-                <td @click="addFavorite(valute)" v-bind:class="{ active: showMobileMenu }">
-                  favorite
+                <td @click="addFavorite(valute)" v-model="favoriteFlag" v-bind:class="{ active: showMobileMenu }">
+                  <v-icon :class="{'favorite' : isFavorite}">mdi-cards-heart</v-icon>
                 </td>
                 <td @click.stop="openChartModal(valute)">
                   {{ valute[0] }}
@@ -49,7 +50,7 @@
 
           </v-simple-table>
 
-          <div class="d-flex" style="min-width: 350px; border: 1px solid red; padding: 10px">
+          <div class="d-flex" style="min-width: 350px; border: 1px solid #ff0000; padding: 10px">
             <v-col>
               <v-flex class="d-flex justify-center">
                 <h3>Favorite Rates</h3>
@@ -60,7 +61,7 @@
                       color="primary"
                       fab
                       x-small
-                      @click="deleteFavorite"
+                      @click="deleteFavorite(favorite)"
                   >
                     <v-icon>mdi-delete</v-icon>
                   </v-btn>
@@ -92,37 +93,68 @@ export default {
         name: '',
         cc: ''
       },
-      showMobileMenu: false
+      showMobileMenu: false,
+      favoriteFlag: false,
+      favoriteCurrencyList: [],
+      isFavorite: false
     }
   },
   async mounted() {
-    this.valutes = await this.$store.dispatch('fetchCurrency')
+    await this.favOrdering()
   },
   methods: {
     openChartModal(valute) {
       this.currency = valute[1];
       this.showChartModal = true
     },
-    addFavorite(valute) {
-      let favorites = []
-      // let favorites = localStorage.getItem("favorites");
-      // favorites = (favorites) ? JSON.parse(favorites) : [];
-      // console.log(localStorage.favorites)
 
+    async addFavorite(valute) {
       let newFavorite = {
         name: valute[1].txt,
-        cc: valute[0]
+        cc: valute[0],
       }
-      this.favorites.push(newFavorite);
-      // localStorage.setItem("test", JSON.stringify(favorites));
-      // console.log(favorites)
+      let ind = this.favorites.find((obj) => {
+        return obj.cc === newFavorite.cc
+      })
+      if(typeof(ind) ==='undefined')
+      {
+        this.favorites.push(newFavorite);
+      }
+      localStorage.setItem("favorites", JSON.stringify(this.favorites));
+      await this.favOrdering()
     },
-    deleteFavorite() {
-      let index = this.favorites.indexOf(1)
+    async deleteFavorite(favorite) {
+      let index = this.favorites.indexOf(favorite)
       this.favorites.splice(index, 1);
+      localStorage.setItem("favorites", JSON.stringify(this.favorites));
+      await this.favOrdering()
+    },
+
+    async favOrdering(){
+      this.favorites = JSON.parse(localStorage.getItem("favorites"));
+      this.valutes = await this.$store.dispatch('fetchCurrency')
+      let favRates = new Map()
+      let otherRates = new Map()
+      this.valutes.forEach(val=>{
+        let ind = this.favorites.find((obj) => {
+          return obj.cc === val.cc
+        })
+        if(typeof(ind) ==='undefined')
+        {
+          otherRates.set(val.cc, val);
+        }
+        else{
+          favRates.set(val.cc, val);
+        }
+      })
+      this.valutes = new Map([...favRates,...otherRates]);
     }
   }
 }
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+.favorite {
+  color: #ee44aa!important;
+}
+</style>
