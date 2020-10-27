@@ -1,74 +1,86 @@
 <template>
   <v-container fluid>
     <v-layout row wrap>
-
       <v-col cols="10" md="12" lg="9" xl="6" class="bg--light mx-auto">
-        <v-flex class="d-flex justify-center">
+        <v-flex class="d-flex justify-center mb-5">
           <h1>Currency Rates</h1>
         </v-flex>
 
         <v-row class="justify-space-between">
-          <v-simple-table
-              fixed-header
-              height="450px"
-          >
-            <template v-slot:default>
-              <thead>
-              <tr>
-                <th class="text-left">
-                  favorite
-                </th>
-                <th class="text-left">
-                  cc
-                </th>
-                <th class="text-left">
-                  txt
-                </th>
-                <th class="text-left">
-                  rate
-                </th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr
-                  v-for="valute in valutes"
-                  :key="valute[0]"
-                  :class="{ active: valute[0] === isFavorite}"
-              >
-                <td @click="addFavorite(valute)" v-model="favoriteFlag" v-bind:class="{ active: showMobileMenu }">
-                  <v-icon :class="{'favorite' : isFavorite}">mdi-cards-heart</v-icon>
-                </td>
-                <td @click.stop="openChartModal(valute)">
-                  {{ valute[0] }}
-                </td>
-                <td>{{ valute[1].txt }}</td>
-                <td>{{ valute[1].rate }}</td>
-              </tr>
-              <ChartModal v-model="showChartModal" :currency="currency"/>
-              </tbody>
-            </template>
+          <v-col cols="12" md="6" class="pt-0">
+            <v-simple-table
+                fixed-header
+                height="400px"
+            >
+              <template v-slot:default>
+                <thead>
+                <tr>
+                  <th class="text-left text-uppercase">
+                    code
+                  </th>
+                  <th class="text-left text-uppercase">
+                    name
+                  </th>
+                  <th class="text-left text-uppercase">
+                    rate
+                  </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr
+                    v-for="valute in valutes"
+                    :key="valute[0]"
+                >
+                  <td @click="addFavorite(valute)">
+                    <v-tooltip bottom>
+                      <template v-slot:activator="{ on, attrs }">
+                        <span
+                            v-bind="attrs"
+                            v-on.stop="on"
+                        >{{ valute[0] }}</span>
+                      </template>
+                      <span>Add to favorites</span>
+                    </v-tooltip>
+                  </td>
+                  <td @click.stop="openChartModal(valute)">
+                    <v-tooltip bottom>
+                      <template v-slot:activator="{ on, attrs }">
+                        <span
+                            v-bind="attrs"
+                            v-on.stop="on"
+                        >{{ valute[1].txt }}</span>
+                      </template>
+                      <span>Open chart</span>
+                    </v-tooltip>
+                  </td>
+                  <td>{{ valute[1].rate }}</td>
+                </tr>
+                <ChartModal v-model="showChartModal" :currency="currency"/>
+                </tbody>
+              </template>
+            </v-simple-table>
+          </v-col>
 
-          </v-simple-table>
-
-          <div class="d-flex" style="min-width: 350px; border: 1px solid #ff0000; padding: 10px">
-            <v-col>
-              <v-flex class="d-flex justify-center">
-                <h3>Favorite Rates</h3>
-              </v-flex>
-              <ul v-for="favorite in favorites">
-                <li>{{ favorite.cc }} - {{ favorite.name }}
-                  <v-btn
-                      color="primary"
-                      fab
-                      x-small
-                      @click="deleteFavorite(favorite)"
+          <v-col cols="12" md="5" class="pa-5 fav-block">
+            <v-flex class="d-flex justify-center">
+              <h3>Favorite Rates</h3>
+            </v-flex>
+            <ul v-for="favorite in favorites" class="pl-0">
+              <li class="d-flex my-3 justify-space-between">
+                <div> {{ favorite.cc }} - {{ favorite.name }}</div>
+                <div>
+                  <v-btn class="ml-3"
+                         color="primary"
+                         fab
+                         x-small
+                         @click="deleteFavorite(favorite)"
                   >
                     <v-icon>mdi-delete</v-icon>
                   </v-btn>
-                </li>
-              </ul>
-            </v-col>
-          </div>
+                </div>
+              </li>
+            </ul>
+          </v-col>
         </v-row>
       </v-col>
     </v-layout>
@@ -93,10 +105,7 @@ export default {
         name: '',
         cc: ''
       },
-      showMobileMenu: false,
-      favoriteFlag: false,
-      favoriteCurrencyList: [],
-      isFavorite: false
+      favoriteCurrencyList: []
     }
   },
   async mounted() {
@@ -116,13 +125,13 @@ export default {
       let ind = this.favorites.find((obj) => {
         return obj.cc === newFavorite.cc
       })
-      if(typeof(ind) ==='undefined')
-      {
+      if (typeof (ind) === 'undefined') {
         this.favorites.push(newFavorite);
       }
       localStorage.setItem("favorites", JSON.stringify(this.favorites));
       await this.favOrdering()
     },
+
     async deleteFavorite(favorite) {
       let index = this.favorites.indexOf(favorite)
       this.favorites.splice(index, 1);
@@ -130,24 +139,22 @@ export default {
       await this.favOrdering()
     },
 
-    async favOrdering(){
+    async favOrdering() {
       this.favorites = JSON.parse(localStorage.getItem("favorites"));
       this.valutes = await this.$store.dispatch('fetchCurrency')
       let favRates = new Map()
       let otherRates = new Map()
-      this.valutes.forEach(val=>{
+      this.valutes.forEach(val => {
         let ind = this.favorites.find((obj) => {
           return obj.cc === val.cc
         })
-        if(typeof(ind) ==='undefined')
-        {
+        if (typeof (ind) === 'undefined') {
           otherRates.set(val.cc, val);
-        }
-        else{
+        } else {
           favRates.set(val.cc, val);
         }
       })
-      this.valutes = new Map([...favRates,...otherRates]);
+      this.valutes = new Map([...favRates, ...otherRates]);
     }
   }
 }
@@ -155,6 +162,13 @@ export default {
 
 <style lang="scss">
 .favorite {
-  color: #ee44aa!important;
+  color: #ee44aa !important;
+}
+
+.fav-block {
+  border: 1px solid #ff0000;
+  max-height: 400px;
+  position: relative;
+  overflow-y: scroll;
 }
 </style>

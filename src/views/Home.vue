@@ -1,7 +1,6 @@
 <template>
   <v-container fluid>
     <v-layout row wrap>
-
       <v-col cols="10" md="12" lg="9" xl="6" class="bg--light mx-auto">
         <v-flex class="d-flex justify-center">
           <h1>Currency Converter</h1>
