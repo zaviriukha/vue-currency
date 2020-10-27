@@ -24,6 +24,9 @@
                   <th class="text-left text-uppercase">
                     rate
                   </th>
+                  <th class="text-left text-uppercase">
+                    favorite
+                  </th>
                 </tr>
                 </thead>
                 <tbody>
@@ -31,19 +34,9 @@
                     v-for="valute in valutes"
                     :key="valute[0]"
                 >
-                  <td @click="addFavorite(valute)">
-                    <v-tooltip bottom>
-                      <template v-slot:activator="{ on, attrs }">
-                        <span
-                            v-bind="attrs"
-                            v-on.stop="on"
-                        >{{ valute[0] }}</span>
-                      </template>
-                      <span>Add to favorites</span>
-                    </v-tooltip>
-                  </td>
+                  <td>{{ valute[0] }}</td>
                   <td @click.stop="openChartModal(valute)">
-                    <v-tooltip bottom>
+                    <v-tooltip top>
                       <template v-slot:activator="{ on, attrs }">
                         <span
                             v-bind="attrs"
@@ -54,6 +47,11 @@
                     </v-tooltip>
                   </td>
                   <td>{{ valute[1].rate }}</td>
+                  <td>
+                    <v-btn @click="addFavorite(valute)" color="primary" fab x-small>
+                      <v-icon>mdi-heart</v-icon>
+                    </v-btn>
+                  </td>
                 </tr>
                 <ChartModal v-model="showChartModal" :currency="currency"/>
                 </tbody>

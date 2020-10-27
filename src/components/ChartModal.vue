@@ -1,46 +1,46 @@
 <template>
   <v-dialog v-model="show" max-width="500px">
-    <v-card>
-      <v-card-title class="headline grey lighten-2">
-        {{ currency.txt }} ({{ currency.cc }})
-      </v-card-title>
+      <v-card>
+        <v-card-title class="headline grey lighten-2">
+          {{ currency.txt }} ({{ currency.cc }})
+        </v-card-title>
 
-      <v-card-text>
-        <v-row class="mt-2">
-          <v-select v-model="sortType" v-on:change="sortItem()" filled
-                    label="Select Limits" :items="sortItems" item-value="value" item-text="text"
-                    dense>
-          </v-select>
-        </v-row>
 
-        <v-spacer></v-spacer>
+        <v-card-text>
+          <v-row class="mt-2">
+            <v-select v-model="sortType" v-on:change="sortItem()" filled
+                      label="Select Limits" :items="sortItems" item-value="value" item-text="text"
+                      dense>
+            </v-select>
+          </v-row>
 
-        <div>
-          <LineChart :width="400" :height="300"
-                     :chartData="datacollection"/>
-        </div>
-<!--        <v-btn color="primary" @click="lastMonthRate">Close</v-btn>-->
-      </v-card-text>
+          <v-spacer></v-spacer>
 
-      <v-divider></v-divider>
+          <div>
+            <LineChart :width="400" :height="300" :chartData="datacollection"/>
+          </div>
+        </v-card-text>
 
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn color="primary" @click.stop="show=false">Close</v-btn>
-      </v-card-actions>
-    </v-card>
+
+        <v-divider></v-divider>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" @click="reset">Close</v-btn>
+        </v-card-actions>
+
+      </v-card>
   </v-dialog>
 </template>
 
 <script>
-import Chart from 'chart.js';
 import LineChart from "@/components/LineChart";
 
 export default {
   name: "ChartModal",
   components: {LineChart},
   data: () => ({
-    datacollection: null,
+    datacollection: {},
     weekDays: [],
     sortType: {
       value: "week",
@@ -68,7 +68,7 @@ export default {
   computed: {
     show: {
       get() {
-        if(this.value===true){
+        if (this.value === true) {
           this.weekRates()
         }
         return this.value
@@ -78,8 +78,17 @@ export default {
       },
     }
   },
-  mounted() {},
+  mounted() {
+  },
   methods: {
+    reset () {
+      this.show = false;
+      this.sortType = {
+        value: "week",
+        text: "Week"
+      }
+    },
+
     async weekRates() {
       let lastWeek = new Map();
       let currentDay = new Date;
@@ -95,12 +104,12 @@ export default {
       }
     },
 
-    async halfYearRate(){
+    async halfYearRate() {
       let halfYear = new Map();
       let currentMonth = new Date;
       const format = "YYYYMMDD";
 
-      for (let i = 6; i >= 0; i--) {
+      for (let i = 11; i >= 0; i--) {
         let dt = new Date;
         dt = dt.setMonth(dt.getMonth() - i);
         let stringHalfYear = moment(dt).format(format);
@@ -119,7 +128,7 @@ export default {
       prevDayMonth.setMonth(prevDayMonth.getMonth() - 1);
 
       let dd = (currentDayMonth - prevDayMonth) / 1000 / 60 / 60 / 24;
-      for (let i=dd; i >= 0; i--) {
+      for (let i = dd; i >= 0; i--) {
         let dt = new Date;
         dt = dt.setDate(dt.getDate() - i);
         let stringDate = moment(dt).format(format);
@@ -142,7 +151,7 @@ export default {
         ],
       }
       let labels = [];
-      let data =[];
+      let data = [];
       for (let pair of rateMap) {
         labels.push(pair[0]);
         data.push(pair[1]);
@@ -150,6 +159,7 @@ export default {
       this.datacollection.labels = labels;
       this.datacollection.datasets[0].data = data;
     },
+
     sortItem() {
       if (this.sortType === 'week') {
         this.weekRates();
@@ -161,12 +171,6 @@ export default {
         this.halfYearRate();
       }
     }
-
-  },
-
-
+  }
 }
 </script>
-
-<style scoped lang="scss">
-</style>
