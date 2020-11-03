@@ -107,6 +107,11 @@ export default {
     }
   },
   async mounted() {
+    let storageItem = JSON.parse(localStorage.getItem("favorites"));
+    if(storageItem === null)
+    {
+      localStorage.setItem("favorites", JSON.stringify(this.favorites));
+    }
     await this.favOrdering()
   },
   methods: {
