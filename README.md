@@ -1,4 +1,7 @@
-# test
+# Transactions with currencies (Vue.js)
+```
+SPA project based on Vue.js and API of the National Bank of Ukraine (NBU). The first page is the currency exchange. The second page contains exchange rates with selected currencies and their charts (in a modal window).
+```
 
 ## Project setup
 ```
